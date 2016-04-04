@@ -1,6 +1,6 @@
 # Niu-X2-Sidebar
 
-Niu-X2-Sidebar is a responsive theme for pelican, built with bootstrap3.
+Niu-X2-Sidebar is a responsive theme for pelican, built with bootstrap3 By [Ma Wenbao](https://github.com/mawenbao).
 
 As I am pretty new to bootstrap and jinja2, the codes look messy and may be buggy. If you find any bugs, please let me know.
 
@@ -12,11 +12,12 @@ BSD 3-Clause License. Please see LICENSE.txt for more details.
 
 ![Demo image of niu-x2 theme](https://raw.github.com/mawenbao/niu-x2-sidebar/master/screenshot.png "niu-x2-sidebar demo image")
 
-You can check my blog [blog.atime.me](http://blog.atime.me) for a live demo.
+You can check my blog [xuweitao.me](http://xuweitao.me) for a live demo.
 
 Other demos:
 
 1. [J-Cn.me](http://J-Cn.me)
+2. [blog.atime.me](http://blog.atime.me)
 
 ## Features
 *  Responsive.
@@ -45,7 +46,7 @@ For more theme related configurations, please refer to `Theme settings` section 
 
 First clone the repository:
 
-    git clone https://github.com/mawenbao/niu-x2-sidebar
+    git clone https://github.com/pyxuweitao/niu-x2-sidebar
 
 Then set `THEME` variable to the path of the repository folder you have just cloned in your pelican configuration.
 
