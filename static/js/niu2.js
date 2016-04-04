@@ -1,4 +1,4 @@
-/*
+/*!
  * @author: mwenbao@gmail.com
  * @license: see LICENSE.txt
  * @depend: jquery 1.10+
@@ -31,6 +31,7 @@ window.gCurrTocId = '';
 window.gSidebarCtrlButtonEnabled = true;
 window.gMousePositionX = 0;
 window.gMousePositionY = 0;
+window.gTocStyle = 'fixed';
 
 $(document).ready(function() {
     initGoogleCSEAnimation();
@@ -49,18 +50,21 @@ function onContentLoaded() {
     //window.setInterval(updateFootnoteStatus, 500);
     updateFootnoteStatus();
 
-    // detach toc list before inserting many
-    // toc index <span>, for performance reason
-    getTocList().detach();
-    initTocListIndex(getTocList());
-    getTocList().appendTo(getSidebarToc());
+    window.gTocStyle = $('#niu2-toc').data('style');
+    if (window.gTocStyle != 'closed') {
+        // detach toc list before inserting many
+        // toc index <span>, for performance reason
+        getTocList().detach();
+        initTocListIndex(getTocList());
+        getTocList().appendTo(getSidebarToc());
 
-    setSidebarTocSize();
-    setTocOverflowedTitle();
+        setSidebarTocWidth();
+        setTocOverflowedTitle();
 
-    initTocLinkScrollAnimation();
-    initAllTocsCtrl();
-    locateTocInViewport();
+        initTocLinkScrollAnimation();
+        initAllTocsCtrl();
+        locateTocInViewport();
+    }
 
     initToolbar();
 }
@@ -88,6 +92,7 @@ function initHermitPlayer() {
 
 function initToolbar() {
     if (getToolbar()) {
+        window.gToolbarLeftPos = $(getToolbar()).css('left');
         var rightContainers = $('.niu2-right-container');
         var showSidebarTitle = $('#niu2-toolbar-showsidebar').data('title');
         var hideSidebarTitle = $('#niu2-toolbar-ctrlsidebar').attr('title');
@@ -111,8 +116,9 @@ function initToolbar() {
             $('#niu2-toolbar-viewsource').attr('href', 'https://bitbucket.org/' + bitbucketRepo + '/raw/master/content' + docPath);
         }
 
-        // init load-pic overly
-        $('<div id="niu2-loading-overly" style="display:none;"><i id="niu2-loading-icon" class="fa fa-spinner fa-4x fa-spin"></i></div>').appendTo('body');
+        // init loading overly
+        var tbLoadingOverlyIconClass = $('#niu2-toolbar-load').data('loading-icon');
+        $('<div id="niu2-loading-overly" style="display:none;"><i id="niu2-loading-icon" class="' + tbLoadingOverlyIconClass + '"></i></div>').appendTo('body');
 
         var leftContainer = $('#niu2-left-container');
         var footer = $('#body-footer');
@@ -134,15 +140,17 @@ function initToolbar() {
                 markVerticalPosition();
                 rightContainers.fadeOut('fast');
                 leftContainer.removeClass('with-right-border');
-                leftContainer.animate({width: '65%'}, leftCSlideDuration, complete=function() {
+                leftContainer.animate({width: '67%'}, leftCSlideDuration, complete=function() {
                     restoreVerticalPosition(function() {
                         enableSidebarCtrlButton();
-                        ctrlIcon.attr('class', 'fa fa-3x fa-chevron-circle-left');
+                        ctrlIcon.attr('class', 'icon-3x icon-show-sidebar');
                         ctrlSidebar.attr('title', showSidebarTitle);
                         loadingOverly.hide();
+                        // must reset cached objects of footnote refs and backrefs
+                        resetFootnoteCache();
                     });
                 });
-                footer.animate({width: '65%'}, leftCSlideDuration);
+                footer.animate({width: '67%'}, leftCSlideDuration);
             } else {
                 markVerticalPosition();
                 leftContainer.animate({width: '50%'}, leftCSlideDuration, complete=function() {
@@ -160,26 +168,25 @@ function initToolbar() {
                     });
                     restoreVerticalPosition(function() {
                         enableSidebarCtrlButton();
-                        ctrlIcon.attr('class', 'fa fa-3x fa-chevron-circle-right');
+                        ctrlIcon.attr('class', 'icon-3x icon-hide-sidebar');
                         ctrlSidebar.attr('title', hideSidebarTitle);
                         window.gEnableTocStatusUpdate = true;
                         locateTocInViewport();
                         loadingOverly.hide();
+                        // must reset cached objects of footnote refs and backrefs
+                        resetFootnoteCache();
                     });
                 });
                 footer.animate({width: '50%'}, leftCSlideDuration);
             }
-            // must reset cached objects of footnote refs and backrefs
-            resetFootnoteRefs();
-            resetFootnoteBackRefs();
-            resetFootnoteRefMap();
         });
     }
 }
 
 function initLazyLoad() {
     var imageNodes = $('#niu2-main-content img.lazy');
-    if (0 != imageNodes.length && $('#niu2-lazy-load-text')[0]) {
+    var imgLazyLoadData = $('#niu2-lazy-load');
+    if (0 != imageNodes.length && imgLazyLoadData.length != 0) {
         // add lazyload js file
         appendJsFileToBody('/js/jquery.lazyload.min.js');
         // add colorbox js/css file
@@ -187,7 +194,8 @@ function initLazyLoad() {
         appendJsFileToBody('/colorbox/jquery.colorbox.min.js');
         // find all the images and prepare for lazyload.js
         var imgWidthLimit = getMainContent().getBoundingClientRect().width;
-        var imgHoverText = $('#niu2-lazy-load-text').data('loading');
+        var imgHoverText = imgLazyLoadData.data('loading-txt');
+        var imgHoverIconClass = imgLazyLoadData.data('loading-icon');
         imageNodes.each(function(i, elem) {
             var imgRealWidth = parseInt($(elem).data('width'));
             var imgRealHeight = parseInt($(elem).data('height'));
@@ -196,7 +204,7 @@ function initLazyLoad() {
             $(elem).attr('height',  imgHeightLimit + 'px');
             // show loading text
             $(elem).parent().addClass('image-cover-box');
-            var imgCover = $('<span class="image-cover">' + imgHoverText + '<i class="fa fa-circle-o-notch fa-spin"></i></span>').insertAfter($(elem));
+            var imgCover = $('<span class="image-cover">' + imgHoverText + '<i class="' + imgHoverIconClass + '"></i></span>').insertAfter($(elem));
             imgCover.css('top', ((imgHeightLimit - imgCover.height()) / 2 - 3) + 'px');
             imgCover.css('width', (imgWidthLimit > imgRealWidth ? imgRealWidth : imgWidthLimit) + 'px');
         });
@@ -258,8 +266,9 @@ function getMainContentHeaders() {
     return window.gMainContentHeaders;
 }
 
-function setSidebarTocSize() {
-    getSidebarToc().attr('style', 'max-width:' + getSidebarToc().width() + 'px;');
+function setSidebarTocWidth() {
+    var tocMaxWidth = getSidebarToc().width();
+    getSidebarToc().attr('style', 'max-width:' + tocMaxWidth + 'px');
 }
 
 function resetSidebarToc() {
@@ -267,6 +276,9 @@ function resetSidebarToc() {
 }
 
 function toggleSidebarTocFixed() {
+    if (window.gTocStyle != 'fixed') {
+        return;
+    }
     var sidebarToc = $('#niu2-sidebar-toc');
     var sidebarMeta = $('#niu2-sidebar-meta');
     if (sidebarToc.length == 0 || sidebarMeta.length == 0) {
@@ -443,6 +455,9 @@ function getHtmlHeaders() {
 }
 
 function locateTocInViewport() {
+    if (window.gTocStyle != 'fixed') {
+        return;
+    }
     if (!window.gEnableTocStatusUpdate) {
         return;
     }
@@ -483,8 +498,12 @@ function getSidebarToc() {
 }
 
 function getTocList() {
+    if (window.gTocStyle == 'closed') {
+        return null;
+    }
     if (!window.gTocList) {
         window.gTocList = $('#niu2-sidebar-toc-list');
+        window.gTocListType = window.gTocList[0].tagName.toLowerCase();
     }
     return window.gTocList;
 }
@@ -573,9 +592,10 @@ function autoscrollTocList() {
 function openActiveTocList(activeLi) {
     // show next level tocs
     var activeChilds = activeLi.children();
-    if (activeChilds.length > 2 && $(activeChilds[2]).is('ol')) {
-        showToc($(activeChilds[2]));  // show ol
-        showToc($(activeChilds[2]).children()); // show ol li
+    var currActiveChild = $(activeChilds[2]);
+    if (activeChilds.length > 2 && (currActiveChild.is('ol') || currActiveChild.is('ul'))) {
+        showToc(currActiveChild);  // show ol/ul
+        showToc(currActiveChild.children()); // show ol/ul li
     }
 
     // show active toc and his sibling tocs
@@ -595,13 +615,13 @@ function openActiveTocList(activeLi) {
 }
 
 function closeAllTocs() {
-    hideToc($('#niu2-sidebar-toc-list ol li'));
-    hideToc($('#niu2-sidebar-toc-list li ol'));
+    hideToc($('#niu2-sidebar-toc-list ' + window.gTocListType + ' li'));
+    hideToc($('#niu2-sidebar-toc-list li ' + window.gTocListType));
 }
 
 function openAllTocs() {
-    showToc($('#niu2-sidebar-toc-list ol li'));
-    showToc($('#niu2-sidebar-toc-list li ol'));
+    showToc($('#niu2-sidebar-toc-list ' + window.gTocListType + ' li'));
+    showToc($('#niu2-sidebar-toc-list li ' + window.gTocListType));
 }
 
 function initHeaderScrollAnimation(targets) {
@@ -739,6 +759,12 @@ function unhighlightFootnote() {
     }
 }
 
+function resetFootnoteCache() {
+    resetFootnoteRefs();
+    resetFootnoteBackRefs();
+    resetFootnoteRefMap();
+}
+
 function resetFootnoteRefs() {
     window.gFootnoteRefs = $('.footnote-ref');
 }
@@ -806,9 +832,9 @@ function initFootnoteBackRefLinks() {
         if (1 == (ftRefLinksNum)) {
             backrefSpan += '<a class="footnote-backref" href="#' +
                 ftRefLinksMap.id + '" data-source="' + ftLiNodeId + 
-                '"><i class="fa fa-angle-up"></i></a>';
+                '"><i class="icon-angle-up"></i></a>';
         } else {
-            backrefSpan += '<i class="fa fa-angle-up"></i><span class="sub-backref-link">';
+            backrefSpan += '<i class="icon-angle-up"></i><span class="sub-backref-link">';
             for (var i = 0; i < ftRefLinksNum; i++) {
                 backrefSpan += '<a class="footnote-backref" href="#' + ftRefLinksMap.id +
                     '" data-source="' + ftLiNodeId + '">' + (i + 1) + '</a> ';
@@ -954,10 +980,12 @@ function initMouseXYRecord() {
         }
 
         // sidebar toc list scroll
-        if (isPositionInRect(e.clientX, e.clientY, getTocList()[0].getBoundingClientRect())) {
-            window.gMouseInSidebarTocList = true;
-        } else {
-            window.gMouseInSidebarTocList = false;
+        if (window.gTocStyle != 'closed') {
+            if (isPositionInRect(e.clientX, e.clientY, getTocList()[0].getBoundingClientRect())) {
+                window.gMouseInSidebarTocList = true;
+            } else {
+                window.gMouseInSidebarTocList = false;
+            }
         }
 
         // toggle toolbar
@@ -967,7 +995,7 @@ function initMouseXYRecord() {
                 return;
             }
             var hideToolbarAnimationFunc = function() {
-                $(getToolbar()).animate({left: '-36px'}, 500, complete=function() {
+                $(getToolbar()).animate({left: window.gToolbarLeftPos}, 500, complete=function() {
                     window.gToolbarAnimationEnabled = true;
                     window.gToolbarHidden = true;
                 });
@@ -1016,7 +1044,7 @@ function showToc(tocs) {
         var toc = $(elem);
         if (toc.is('li')) {
             toc.attr('style', 'display:list-item;');
-        } else if (toc.is('ol')) {
+        } else if (toc.is('ol') || toc.is('ul')) {
             toc.attr('style', 'display:block;');
         }
     });
@@ -1042,11 +1070,11 @@ function initAllTocsCtrl() {
 function toggleAllTocs() {
     if (isAllTocsClosed()) {
         getSidebarToc().data('status', 'open');
-        getSidebarTocCtrl().attr('class', 'fa fa-minus');
+        getSidebarTocCtrl().attr('class', 'icon-close-tocs');
         openAllTocs();
     } else {
         getSidebarToc().data('status', 'closed');
-        getSidebarTocCtrl().attr('class', 'fa fa-plus');
+        getSidebarTocCtrl().attr('class', 'icon-open-tocs');
         closeAllTocs();
     }
     locateTocInViewport();

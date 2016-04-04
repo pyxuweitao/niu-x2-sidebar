@@ -1,4 +1,4 @@
-/*
+/*!
  * built with boostrap3 
  * @navbar-height: 30px
  * @nav-link-padding: 7px
@@ -18,6 +18,8 @@ code {
 
 i {
     margin-right: 4px;
+    display: inline-block;
+    vertical-align: -4%;
 }
 
 h2:first-child {
@@ -229,7 +231,7 @@ img {
 }
 
 .niu2-right-container {
-    margin-left: 5px;
+    padding-left: 16px;
 }
 
 a.niu2-active-toc, a.niu2-active-toc:hover {
@@ -292,6 +294,7 @@ a.niu2-active-toc:before {
 
 #niu2-sidebar-toc {
     margin-top: 10px !important;
+    min-width: 210px !important;
 }
 
 #niu2-sidebar-toc-list {
@@ -324,7 +327,7 @@ a.niu2-active-toc:before {
 }
 
 #niu2-sidebar-toc-list li li a {
-    max-width: 78%;
+    max-width: 68%;
 }
 
 #niu2-sidebar-toc-list li li li a {
@@ -332,11 +335,13 @@ a.niu2-active-toc:before {
     margin-left: 6px;
 }
 
-#niu2-sidebar-toc-list li ol {
+#niu2-sidebar-toc-list li ol,
+#niu2-sidebar-toc-list li ul {
     display: none;
 }
 
-#niu2-sidebar-toc-list ol li {
+#niu2-sidebar-toc-list ol li,
+#niu2-sidebar-toc-list ul li {
     display: none;
     position: relative;
     left: 1em;
@@ -409,8 +414,9 @@ img {
 
 #niu2-cse-search-input {
 	width: 150px;
-    height: 20px;
+    height: 21px;
     padding: 1px 3px;
+    margin-top: 1px;
 }
 
 #niu2-cse-ctrl-box {
@@ -464,10 +470,6 @@ img {
 .niu2-meta-date-index {
     font-size: 14px;
     margin-right: 10px;
-}
-
-.niu2-index-title {
-    margin-bottom: 20px;
 }
 
 .niu2-index-date {
@@ -547,6 +549,11 @@ a.niu2-toggle-ctrl:hover {
 #niu2-archives {
     font-size: 15px;
     line-height: 1.7;
+}
+
+#niu2-archives .panel {
+    box-shadow: none;
+    margin-bottom: 10px;
 }
 
 #niu2-archives ul {
@@ -637,6 +644,7 @@ h4:before, h5:before, h6:before {
 
 #niu2-loading-overly {
     position: fixed;
+    top: 0;
     width: 100%;
     height: 100%;
     background: #000;
@@ -651,16 +659,48 @@ h4:before, h5:before, h6:before {
     color: #fff;
 }
 
+/* helper classes for icomoon fonts */
+@-webkit-keyframes anim-rotate {
+    0% {
+        -webkit-transform: rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(360deg);
+    }
+}
+
+@keyframes anim-rotate {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.icon-spin {
+    -webkit-animation: anim-rotate 2s infinite linear;
+    animation: anim-rotate 2s infinite linear;
+}
+
+.icon-lg {
+    font-size: 1.33333333em;
+    line-height: .75em;
+    vertical-align: -15%;
+}
+.icon-2x { font-size: 2em; }
+.icon-3x { font-size: 3em; }
+.icon-4x { font-size: 4em; }
+.icon-5x { font-size: 5em; }
+
+@media (max-width: 1000px) {
+/* do not show sidebar toc when screen is too narrow */
+#niu2-sidebar-toc {
+    display: none !important;
+}
+}
+
 @media (max-width: 767px) {
-
-.dropdown-toc > .dropdown-menu > li > a {
-    padding: 5px 10px 5px 10px !important;
-}
-
-.niu2-index-date {
-	display: none;
-}
-
 #niu2-cse-wrapper {
     margin-right: 20px;
     padding-bottom: 10px;
@@ -689,18 +729,6 @@ h4:before, h5:before, h6:before {
 
 #niu2-cse-search-text {
     display: none;
-}
-
-.dropdown-toc a {
-    color: #999;
-}
-
-}
-
-@media (max-height: 300px) {
-/* 2 levels at most */
-.dropdown-toc li li li {
-    display: none !important;
 }
 
 }
