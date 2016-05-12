@@ -1,12 +1,12 @@
-            <div class="navbar navbar-inverse navbar-fixed-top">
-                <div class="col-md-12">
+            <div class="navbar navbar-default navbar-fixed-top">
+                <div class="col-md-8 col-md-offset-2">
                     <div class="navbar-header">
                         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
                             <span class="icon-bar"></span>
                             <span class="icon-bar"></span>
                             <span class="icon-bar"></span>
                         </button>
-                        <a class="navbar-brand" href="{{ SITEURL | default('/') }}">
+                        <a class="navbar-brand" style="padding-left:0" href="/">
                             <i class="icon-home"></i>{{ NIUX2_HOME_NAME if NIUX2_HOME_NAME else SITENAME}}
                         </a>
                     </div>
@@ -14,7 +14,11 @@
                         <ul class="nav navbar-nav">
                         {% if NIUX2_HEADER_SECTIONS %}
                         {% for section in NIUX2_HEADER_SECTIONS %}
+                            {% if section[1] == 'about' %}
+                            <li><a href="{{ section[2] }}" target="_blank" title="{{ section[1] }}">
+                            {% else %}
                             <li><a href="{{ section[2] }}" title="{{ section[1] }}">
+                            {% endif %}
                                 <i class="{{ section[3] }}"></i>{{ section[0] }}</a>
                             </li>
                         {% endfor %}

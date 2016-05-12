@@ -31,7 +31,6 @@ window.gCurrTocId = '';
 window.gSidebarCtrlButtonEnabled = true;
 window.gMousePositionX = 0;
 window.gMousePositionY = 0;
-window.gTocStyle = 'fixed';
 
 $(document).ready(function() {
     initGoogleCSEAnimation();
@@ -50,21 +49,18 @@ function onContentLoaded() {
     //window.setInterval(updateFootnoteStatus, 500);
     updateFootnoteStatus();
 
-    window.gTocStyle = $('#niu2-toc').data('style');
-    if (window.gTocStyle != 'closed') {
-        // detach toc list before inserting many
-        // toc index <span>, for performance reason
-        getTocList().detach();
-        initTocListIndex(getTocList());
-        getTocList().appendTo(getSidebarToc());
+    // detach toc list before inserting many
+    // toc index <span>, for performance reason
+    getTocList().detach();
+    initTocListIndex(getTocList());
+    getTocList().appendTo(getSidebarToc());
 
-        setSidebarTocWidth();
-        setTocOverflowedTitle();
+    setSidebarTocWidth();
+    setTocOverflowedTitle();
 
-        initTocLinkScrollAnimation();
-        initAllTocsCtrl();
-        locateTocInViewport();
-    }
+    initTocLinkScrollAnimation();
+    initAllTocsCtrl();
+    locateTocInViewport();
 
     initToolbar();
 }
@@ -276,9 +272,6 @@ function resetSidebarToc() {
 }
 
 function toggleSidebarTocFixed() {
-    if (window.gTocStyle != 'fixed') {
-        return;
-    }
     var sidebarToc = $('#niu2-sidebar-toc');
     var sidebarMeta = $('#niu2-sidebar-meta');
     if (sidebarToc.length == 0 || sidebarMeta.length == 0) {
@@ -455,9 +448,6 @@ function getHtmlHeaders() {
 }
 
 function locateTocInViewport() {
-    if (window.gTocStyle != 'fixed') {
-        return;
-    }
     if (!window.gEnableTocStatusUpdate) {
         return;
     }
@@ -498,9 +488,6 @@ function getSidebarToc() {
 }
 
 function getTocList() {
-    if (window.gTocStyle == 'closed') {
-        return null;
-    }
     if (!window.gTocList) {
         window.gTocList = $('#niu2-sidebar-toc-list');
         window.gTocListType = window.gTocList[0].tagName.toLowerCase();
@@ -980,12 +967,10 @@ function initMouseXYRecord() {
         }
 
         // sidebar toc list scroll
-        if (window.gTocStyle != 'closed') {
-            if (isPositionInRect(e.clientX, e.clientY, getTocList()[0].getBoundingClientRect())) {
-                window.gMouseInSidebarTocList = true;
-            } else {
-                window.gMouseInSidebarTocList = false;
-            }
+        if (isPositionInRect(e.clientX, e.clientY, getTocList()[0].getBoundingClientRect())) {
+            window.gMouseInSidebarTocList = true;
+        } else {
+            window.gMouseInSidebarTocList = false;
         }
 
         // toggle toolbar

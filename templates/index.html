@@ -3,9 +3,11 @@
 {% block title %}{{ super() }}{% endblock %}
 
 {% block content %}
+
             <div class="col-md-8 col-md-offset-2">
+
                 {% block content_header %}
-                <h1 class="niu2-index-title">{{ SITENAME }}</h1>
+                <h1 class="niu2-index-title">{% if SITENAME_VISIABLE %}{{ SITENAME }}{% endif %}</h1>
                 {% endblock content_header %}
             </div>
 

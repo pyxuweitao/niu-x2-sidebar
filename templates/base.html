@@ -7,12 +7,11 @@
         {% set font_awesome_loc = NIUX2_LIB_FONTAWESOME if NIUX2_LIB_FONTAWESOME else '' %}
         {% block head %}
         {% block head_init %}
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        {% block seo_meta %}
-        {% endblock seo_meta %}
         <title>{% block title %}{{ SITENAME }}{% endblock %}</title>
         <link rel="shortcut icon" type="image/x-icon" href="{{ NIUX2_FAVICON_URL | default('/favicon.png') }}">
+	<link rel="bookmark" type="image/x-icon" href="{{ NIUX2_MARK_URL | default('/bookmark.png') }}">
         {% for apl_ico_sizes in NIUX2_APPLE_ICON_MAP %}
         <link rel="apple-touch-icon" {%- if apl_ico_sizes %} sizes="{{ apl_ico_sizes }}" {%- endif %} href="{{ NIUX2_APPLE_ICON_MAP[apl_ico_sizes] }}">
         {% endfor %}
@@ -26,6 +25,8 @@
         {% endif %}
         <link rel="stylesheet" href="{{ theme_loc }}/css/niu2.min.css" type="text/css" />
         {% endblock head_init %}
+        <link href='https://fonts.lug.ustc.edu.cn/css?family=Timmana|Kanit|Varela' rel='stylesheet' type='text/css'>
+        <link href="{{ theme_loc }}/css/pagination.min.css" rel='stylesheet' type='text/css'>
         <script type="text/javascript">window.onload=function(){
             {%- block js_on_window_load -%}
             {%- endblock js_on_window_load -%}
@@ -46,6 +47,8 @@
             })();
         </script>
         {% endif %}
+
+        <script src="{{ theme_loc }}/js/pagination.min.js"></script>
     </head>
     <body> 
         <div id="body-header">
